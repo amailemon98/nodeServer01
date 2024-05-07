@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        input{
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <form action="">
-        <input type="text" id="user_name">
-        <button>로그인</button>
+        <input type="text" id="user_name" placeholder="input name">
+        <input type="password" id="user_pwd" placeholder="input pwd">
+        <button>회원가입</button>
     </form>
 
     <script>
@@ -20,12 +26,21 @@
         const btn = document.querySelector('button');
         btn.addEventListener('click', ()=>{
             const input = document.querySelector('#user_name');
-            console.log(input.value);
+            const pwd = document.querySelector('#user_pwd');
+            console.log(input.value, pwd.value);
+            // localhost:4500/login
+            // 입력된 데이터 확인
+
+            const  user = {name : input.value, pwd : pwd.value};
+            
+            // const name = document.querySelector('#user_name').value;
+            // const pwd = document.querySelector('#user_pwd').value;
+            // const user = {user, pwd};
 
             fetch('http://localhost:4500/login', {
                 method: 'POST', //PUT, DELETE...
                 headers: {'content-type' : 'application/json; utf-8'},
-                body: JSON.stringify({name : input.value})
+                body: JSON.stringify(user)
             }).then(res=>res.json())
             .then(res=>console.log(res))
         })

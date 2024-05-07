@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        input{
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>삭제할 아이디 번호를 입력하세요</h1>
+    <form action="">
+        <input type="text" id="user_number" placeholder="input number">
+        <button>삭제하기</button>
+    </form>
+
+    <script>
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (event)=>{
+            event.preventDefault();
+        })
+
+        const btn = document.querySelector('button');
+        btn.addEventListener('click', ()=>{
+            const number = document.querySelector('#user_number');
+            console.log(number.value);
+            // localhost:4500/user/1
+            // 입력된 데이터 확인
+
+            // localhost:4500/user/1
+            // localhost:4500/user/2
+            // localhost:4500/user/3
+            fetch(`http://localhost:4500/user/${number.value}`, {
+                method: 'DELETE'
+            }).then(res=>res.json())
+            .then(res=>{
+                if(res.success === '성공'){
+                    console.log(res);
+                }else{
+                    alert(res.message);
+                }
+            })
+        })
+    </script>
+</body>
+</html>
