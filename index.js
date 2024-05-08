@@ -122,7 +122,7 @@ server.on("request",async (req, res)=>{
         // post : localhost:4500/login
         if(req.url === '/login' && req.method === 'POST' ){
 
-            console.log('/login post');
+            // console.log('/login post');
     
             // chunk : 메모리로 읽어들임
             let body = '';//따로 저장하기 위한 공간
@@ -152,7 +152,7 @@ server.on("request",async (req, res)=>{
                 
                 // 이상없음을 응답해준다.
                 // res.statusCode = 200;
-                res.writeHead(201, {'Content-type': 'text/html'})
+                res.writeHead(201, {'Content-type': 'application/json'})
                 res.write(JSON.stringify({success : "성공", message : "회원가입 정상등록"}));
                 // 어떤 요건으로 응답할 것인가? 에 대한 규칙
                 res.end();
@@ -197,22 +197,77 @@ server.on("request",async (req, res)=>{
                 JSON.stringify(user_data, null, "  "),
                 err => {if(err) throw err});
 
-                res.writeHead(201, {'Content-type': 'text/html'})
+                res.writeHead(201, {'Content-type': 'application/json'})
                 res.write(JSON.stringify({success : "성공", message : "삭제완료"}));
                 res.end();
             }catch(err){
-                res.writeHead(503, {'Content-type': 'text/html'})
+                res.writeHead(503, {'Content-type': 'application/json'})
                 res.write(JSON.stringify({success : "실패", message : "삭제불가"}));
                 res.end();
             }
         }
 
     // delete method end
-    }else if(req.method === 'PUT'){
 
+    // update 수정 : put : 전체 데이터를 수정할 때, patch : 부분 데이터를 수정할 때
+    // 1. 기존에 있는 데이터 찾기 : fs.readFile
+    // 2. 기존에 있는 데이터를 찾아서 삭제 (filter)
+    // 3. 넘어온 데이터를 추가한다 : fs.writeFile
+
+
+    }else if(req.method === 'PUT'){
+        // put : localhost:4500/login
+        if(req.url === '/login'){
+
+            // console.log('/login post');
+    
+            // chunk : 메모리로 읽어들임
+            let body = '';//따로 저장하기 위한 공간
+    
+            req.on('data', (chunk)=>{
+                body += chunk.toString(); // 순수 node의 방법
+            })
+    
+            // body : JSON.stringify({name : input.value})
+            req.on('end', async ()=>{
+                const {id, name, pwd} = JSON.parse(body);
+                console.log(id, name, pwd); // 터미널 확인
+    
+                const user_json = await fs.readFile(path.join(__dirname,'/data', 'user.json'), "utf-8")
+                const user_data = JSON.parse(user_json); // 자바스크립트 파일로 변환
+
+                const findUser = user_data.find(user => user.name === name)
+                // {id, name, pwd}
+    
+                const delete_users = user_data.filter( user=>user.id !== findUser.id ); // id 기준
+                // const delete_users = user_data.filter( user=>user.name !== name ); //이름 기준
+                // const new_user = {id: findUser.id, name, pwd};
+                // delete_users.push(new_user);
+
+                // 에크마스크립트 문법
+                const newUser = {...findUser, name, pwd}; 
+                const users = [...delete_users, newUser];
+
+                fs.writeFile(path.join(__dirname,'/data', 'user.json'),// 파일은 없으면 만든다.
+                // JSON.stringify(delete_users, null, "  "),
+                JSON.stringify(users, null, "  "),
+                err => {if(err) console.log(err)});
+                
+                // 이상없음을 응답해준다.
+                // res.statusCode = 200;
+                res.writeHead(201, {'Content-type': 'application/json'})
+                res.write(JSON.stringify({success : "성공", message : "수정되었습니다."}));
+                // 어떤 요건으로 응답할 것인가? 에 대한 규칙
+                res.end();
+            });
+        }
     // put method end
     }else{
-        res.statusCode = 503;
+        res.writeHead(503, {'Content-type': 'application/json'})
+        // res.writeHead(503, {'Content-type': 'text/plain'}) // 순수 문자를 넘길 때
+        res.write(JSON.stringify({success : "실패", message : "주소를 찾을 수 없습니다."}));
+        // 어떤 요건으로 응답할 것인가? 에 대한 규칙
+        res.end();
     }
     
 })

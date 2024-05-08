@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .todo{
+            display: flex;
+        }
+
+        input:checked+label{
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" id="input_todo" placeholder="할일을 입력하세요">
+    <button class="add">추가</button>
+
+
+    <div class="todos_container">
+        <!-- <div class="todo">
+            <div class="id">1</div>
+            <div class="item">html</div>
+            <input type="checkbox" checked="false" id="test" />
+            <label for="test"></label>
+        </div> -->
+    </div>
+
+    <script>
+        let todos = [
+            {
+                id:1,
+                todo:'html',
+                checked:false
+            },
+            {
+                id:2,
+                todo:'css',
+                checked:false
+            }
+        ]
+
+        
+        function localStorage_save(){
+            localStorage.setItem('todos', JSON.stringify(todos))
+        }
+        localStorage_save();
+
+        // 변수처럼 만든 것은 window에 등록되지 않음
+        function printData(){
+            const todos_container = document.querySelector('.todos_container');
+            todos_container.innerHTML = '';
+
+            todos.map(todo=>{
+                const str = `
+                    <div class="todo">
+                        <div class="id">${todo.id}</div>
+
+                        <input type="checkbox" id="id${todo.id}" ${todo.checked ? "checked" : null} />
+                        <label class="item" for="id${todo.id}">${todo.todo}</label>
+                        <button class="removeItem">삭제</button>
+                    </div>
+                `
+
+                todos_container.insertAdjacentHTML("beforeend", str);
+
+                // const removeItem = document.querySelector('.removeItem');
+                // removeItem.addEventListener('click', (event)=>{
+                //     // event.target.parent.empty(); // 화면만 지우기
+                //     console.log(event.target.parentElement);
+                //     event.target.parentElement.remove(); // 자신을 지우기
+                //     // event.target.parentElement.empty();  // 자식요소 지우기
+                // })
+
+            })
+            // const removeItems = document.querySelectorAll('.removeItem');
+            // removeItems.map(btn => btn.addEventListener('click', ()=>{
+            //     btn.parent.empty(); // 화면만 지우기
+            // }))
+        }
+
+        printData();
+
+
+        // const add = document.querySelector('.add');
+        // add.addEventListener('click', ()=>{
+        //     const todo_value = document.querySelector('#input_todo').value;
+            
+        // })
+        
+        // let length = todos.length;
+        const add = document.querySelector('.add');
+        add.addEventListener('click', ()=>{
+            const todo_value = document.querySelector('#input_todo').value;
+            
+            // 마지막 데이터
+            // console.log(todos[todos.length-1]);
+            // {id: 2, todo: 'css', checked: false}
+            let new_todo = {
+                // id:todos.length >= 1 ? [todos.length-1].id + 1 : 1,
+                id: todos.length ? todos[todos.length-1].id + 1 : 1,
+                // id: ++length,
+                todo:todo_value,
+                checked:false
+            }
+            
+            todos = [...todos, new_todo];
+            // localStorage.setItem('todos', JSON.stringify(todos)); // 덮어쓰기
+            localStorage_save();
+            printData();
+
+            // const removeItems = document.querySelectorAll('.removeItem');
+            // removeItems.map(btn => btn.addEventListener('click', (event)=>{
+            //     event.target.parentElement.remove();
+            //     // btn.parentElement.remove();
+            //     console.log('click');
+            // }))
+        })
+
+        function deleteItem(id){
+            const deleteTodos = todos.filter(todo=>todo.id !== +id)
+            // todos = todos.filter(todo=>todo.id !== +id)
+            todos = [...deleteTodos];
+            localStorage_save();
+
+            printData();
+        }
+
+    </script>
+</body>
+</html>

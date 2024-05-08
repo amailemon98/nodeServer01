@@ -16,6 +16,8 @@
         <input type="password" id="user_pwd" placeholder="input pwd">
         <button class="login">로그인</button>
         <button class="update">수정</button>
+        <button class="getData">localStorage GET</button>
+        <button class="delData">localStorage DELETE</button>
     </form>
 
     <script>
@@ -34,16 +36,7 @@
 
             const  user = {name : input.value, pwd : pwd.value};
             
-            // const name = document.querySelector('#user_name').value;
-            // const pwd = document.querySelector('#user_pwd').value;
-            // const user = {user, pwd};
-
-            fetch('http://localhost:4500/login', {
-                method: 'POST', //PUT, DELETE...
-                headers: {'content-type' : 'application/json; utf-8'},
-                body: JSON.stringify(user)
-            }).then(res=>res.json())
-            .then(res=>console.log(res))
+            localStorage.setItem("login", JSON.stringify(user)); // 값을 저장할땐 setItem
         })
 
         const update_btn = document.querySelector('.update');
@@ -51,15 +44,25 @@
             const name = document.querySelector('#user_name');
             const pwd = document.querySelector('#user_pwd');
 
-            const update_user = {name : name.value, pwd : pwd.value};
+            const get_user = JSON.parse(localStorage.getItem('login'));
+            get_user.pwd = pwd.value;
 
-            fetch('http://localhost:4500/login', {
-                method: 'PUT',
-                headers: {'Content-Type' : 'application/json'},
-                body: JSON.stringify(update_user)
-            }).then(res=>res.json)
-            .then(res=>console.log(res))
+            localStorage.setItem('login', JSON.stringify(get_user))
+        });
+
+        const get_btn = document.querySelector('.getData');
+        get_btn.addEventListener('click', ()=>{
+            console.log(JSON.parse(localStorage.getItem('login'))); // 값을 불러올땐 getItem
+        });
+        const del_btn = document.querySelector('.delData');
+        del_btn.addEventListener('click', ()=>{
+            console.log(JSON.parse(localStorage.removeItem('login'))); // 값을 지울땐 removeItem
         });
     </script>
+    <!-- 
+        localStorage : 값을 공유
+        sessionStorage : 탭이 다르면 값의 공유 불가
+        cookie
+    -->
 </body>
 </html>
